@@ -1,0 +1,60 @@
+---
+title: "Un caso práctico de Data Science"
+author: "rafaelmenmell@gmail.com"
+date: "21 de junio de 2017"
+output:
+  pdf_document: default
+  html_document: default
+---
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE)
+```
+
+## Introducción
+
+Este documento es un intento de hacer un caso práctico de lo que se ha dado en llamar _Data Science_, desarrollando todas las fases del proyecto típico de _DS_. El siguiente esquema [^cita1] muestra el proyecto típico de _data science_:
+
+[^cita1]: [R for Data Science, Hadley Wickham & Garrett Grolemund](http://r4ds.had.co.nz/).
+
+![Esquema de un proyecto de Data Science](http://r4ds.had.co.nz/diagrams/data-science.png)
+
+Por lo tanto el desarrollo del proyecto va a seguir los siguientes pasos:
+1. Adquisición y preparación de datos
+2. Análisis exploratorio y visualización
+3. Modelización y predicción
+
+## Adquisición y preparación de datos
+### Adquisición de los datos
+Los datos elegidos para el presente proyecto son los recogidos en la encuesta de morbilidad hospitalaria (_morbilidad_) recogida por el Instituto Nacional de Esatdística (_INE_) [^cita2], se trata de una encuesta carácter nacional con periodicidad anual en la que se refieren todas las altas hospitalarias de aproximadamente 850 hospitales.
+
+Actualmente se pueden encontrar los ficheros resultado de las encuestas de los años 1978 a 2015 en la sección de _Microdatos_ [^cita3], no se ha encontrado ningún medio para descargar estos ficheros programaticamente (acceso web directo, API) por lo que los ficheros se han descargado manualmente. Los resultados de cada año se descargan en un fichero comprimido llamado _datos_morbiYY.zip_.
+
+El contenido de cada archivo comprimido es un fichero de texto en el que cada línea se corresponde con un alta hospitalaria acaecida en el año en curso. Cada línea está compuesta de 54 caracteres. Por ejemplo
+
+<p style="text-align: center;">255883032822811503132180104005110000010010000000000000</p>
+
+_INE_ [^cita4] facilita el formato de los datos con los que es posible decodificar los mismos.
+
+Campo|Formato|Posición|Descripción
+----------------------------|----------|------------------|-------------------------------------------------------------------
+Número|a8|1--8|Número de orden
+Provincia de hospitalización|a2|9--10|Códigos de provincia: 01-52
+Sexo|a1|11--11|Sexo: 1 = varón, 2 = mujer
+Provincia de residencia|a2|12--13|Códigos de provincia: 01-52 53 = extranjeros
+Diagnóstico de entrada|a1|14--14|Diagnóstico de entrada: 1 = ordinario, 2 = urgente
+Fecha de alta|a6|15--20|Fecha de alta: aa/mm/dd
+Diagnóstico principal (CIE-9-MC)|a4|21-24|Diagnóstico principal (código CIE-9-MC)	Código '857' = 'Alta sin diagnóstico'
+Motivo del alta|a1|25--25|Motivo del alta: 1 = curación , 2 = traslado a otro centro,	3 = fallecimiento , 4 = otras causas
+Edad en años|a3|26-28|Edad en años: 0-120 
+Edad en meses|a2|29-3|Edad en meses: 0-12
+Edad en días|a2|31-32|Edad en días: 0-31
+Estancia|a6|33-38|Días de estancia
+Factor de elevación|999v99999|39-46|Factor de elevación (5 decimales)
+filler|a8|47-54|(en blanco)
+
+
+
+[^cita2]: [Encuesta de morbilidad hospitalaria. Instituto Nacional de Esatdística](http://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736176778&menu=metodologia&idp=1254735573175)
+[^cita3]: [Encuesta de morbilidad hospitalaria. Instituto Nacional de Esatdística. Microdatos](http://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736176778&menu=metodologia&idp=1254735573175)
+[^cita4]: [Encuesta de morbilidad hospitalaria. Instituto Nacional de Esatdística. Diccionario](ftp://www.ine.es/temas/morbihos/disreg_morbi.zip)
