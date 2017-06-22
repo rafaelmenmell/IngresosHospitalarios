@@ -7,12 +7,12 @@ library(seasonal)
 
 LeeZip <- function(year,d=FALSE,p=NULL,u){
   #descomprime
-  filezip <- sprintf("datos_morbi%s.zip",substr(year,3,4))
+  filezip <- sprintf("datos/datos_morbi%s.zip",substr(year,3,4))
   unzip(filezip)
   fileu <- unzip(filezip,list=TRUE)$Name
   #data <- read.fwf(fileu,widths = c(8,2,1,2,1,6,4,1,3,2,2,6,8,8),colClasses=rep("character",14))
   data <- read_fwf(fileu,fwf_widths(c(8,2,1,2,1,6,4,1,3,2,2,6,8,8)))
-  colnames(data) <- c("numero","prov_hosp","sexo","prov_res","diag_in","fecha_alta","diag_ppal","motivo_alta","edad_años","edad_meses","edad_dias","estancia","elevacion","filler")
+  colnames(data) <- c("numero","prov_hosp","sexo","prov_res","diag_in","fecha_alta","diag_ppal","motivo_alta","edad_anyos","edad_meses","edad_dias","estancia","elevacion","filler")
   #vamos a hacer unos cast para reducir el tamaño del data frame
   if(u==TRUE){
     data <- data[data$diag_in==2,]
@@ -23,13 +23,13 @@ LeeZip <- function(year,d=FALSE,p=NULL,u){
   data$prov_res <- as.integer(data$prov_res)
   data$fecha_alta <- ISOdate(year=as.integer(substr(data$fecha_alta,1,2))+2000,month = as.integer(substr(data$fecha_alta,3,4)),day = as.integer(substr(data$fecha_alta,5,6)))
   data$motivo_alta <- as.integer(data$motivo_alta)
-  data$edad_años <- as.integer(data$edad_años)
+  data$edad_anyos <- as.integer(data$edad_anyos)
   data$edad_meses <- as.integer(data$edad_meses)
   data$edad_dias <- as.integer(data$edad_dias)
   data$estancia <- as.integer(data$estancia)
   data$fecha_ingreso <- as.Date(data$fecha_alta-data$estancia*24*60*60)
-  data$edad <- as.integer(round(data$edad_años+data$edad_meses/12+data$edad_dias/365))
-  data$edad_años <- NULL
+  data$edad <- as.integer(round(data$edad_anyos+data$edad_meses/12+data$edad_dias/365))
+  data$edad_anyos <- NULL
   data$edad_meses <- NULL
   data$edad_dias <- NULL
   data$filler <- NULL
@@ -69,11 +69,11 @@ GeneraSerie <- function(data=data.m,columnas=NULL){
   res <- bind_rows(res)
 }
 
-data <- LeeTodos(diag=TRUE,provincia = 28)
-
-data <- bind_rows(data)
-
-saveRDS(data,"data.rds")
+# data <- LeeTodos(diag=TRUE,provincia = 28)
+# 
+# data <- bind_rows(data)
+# 
+# saveRDS(data,"data.rds")
 
 #evolución de los ingresos respitarios pediatricos en madrid
 
