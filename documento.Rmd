@@ -1,10 +1,10 @@
 ---
-title: "Un caso prÃ¡ctico de Data Science"
+title: "Un caso práctico de Data Science"
 author: "rafaelmenmell@gmail.com"
 date: "21 de junio de 2017"
 output:
-  html_document: default
   pdf_document: default
+  html_document: default
 ---
 
 ```{r setup, include=FALSE}
