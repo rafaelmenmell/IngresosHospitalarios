@@ -1,15 +1,21 @@
 ---
-title: "Un caso práctico de Data Science"
+title: "Un caso prÃ¡ctico de Data Science"
 author: "rafaelmenmell@gmail.com"
 date: "21 de junio de 2017"
 output:
-  pdf_document: default
   html_document: default
+  pdf_document: default
 ---
 
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = TRUE)
 ```
+
+```{r source, include=FALSE}
+source("funciones/general.R")
+source("funciones/funciones_aux.R")
+```
+
 
 ## Introducción
 
@@ -20,8 +26,11 @@ Este documento es un intento de hacer un caso práctico de lo que se ha dado en 
 ![Esquema de un proyecto de Data Science](http://r4ds.had.co.nz/diagrams/data-science.png)
 
 Por lo tanto el desarrollo del proyecto va a seguir los siguientes pasos:
+
 1. Adquisición y preparación de datos
+
 2. Análisis exploratorio y visualización
+
 3. Modelización y predicción
 
 ## Adquisición y preparación de datos
@@ -53,8 +62,52 @@ Estancia|a6|33-38|Días de estancia
 Factor de elevación|999v99999|39-46|Factor de elevación (5 decimales)
 filler|a8|47-54|(en blanco)
 
+### Preparación de los datos
 
+Gracias al diccionario de datos se programa una función _LeeZip(year,d=FALSE,p=NULL,u)_ en la que los parámetros tienen el siguiente uso:
 
-[^cita2]: [Encuesta de morbilidad hospitalaria. Instituto Nacional de Esatdística](http://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736176778&menu=metodologia&idp=1254735573175)
-[^cita3]: [Encuesta de morbilidad hospitalaria. Instituto Nacional de Esatdística. Microdatos](http://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736176778&menu=metodologia&idp=1254735573175)
-[^cita4]: [Encuesta de morbilidad hospitalaria. Instituto Nacional de Esatdística. Diccionario](ftp://www.ine.es/temas/morbihos/disreg_morbi.zip)
+* d: (logical) conservar el diagnóstico principal
+* p: (integer) provincia de ingreso
+* U: (logical) filtrar sólo ingresos urgentes
+
+Así por ejemplo:
+```{r chunk1, echo=TRUE, cache=TRUE}
+ingresos.urgentes.madrid.2010 <- suppressMessages(LeeZip(year = "2005",d = TRUE,p = 28,u = TRUE))
+head(ingresos.urgentes.madrid.2010)
+```
+
+Ya casi tenemos toda la información preparada para poder empezar a hacer ciencia de datos. Sólo falta convertir el diagnóstico principal _diag_ppal_ en información directa. Gracias a la diccionario de Correspondencia entre los diagnósticos publicados y la Clasificación Internacional de Enfermedades de la O.M.S. (9ª Revisión MC)[^cita5] podemos contruir sendos diccionarios simplificados que leemos con funciones _ad hoc_.
+```{r chunk2, echo=TRUE, cache=TRUE}
+diccionario <- CargaDiccionario()
+diccionario_masgeneral <- CargaDiciconarioMasGeneral()
+head(diccionario1)
+head(diccionario)
+```
+
+Todavía hay un nivel de detalle mayor en el código de diagnóstico que no aparece en el mencionado diccionario, para acceder a esta información utilizamos la web http://icd9cm.chrisendres.com/index.php mediante una función _TraduceCodigoEspecifico <- function(codigo)_ en la que se la pasa el código que hemos obtenido y devuelve el diagnóstico específico, vamos a comprobar con un ejemplo los tres niveles de diagnóstico.
+
+```{r chunk3, echo=TRUE, cache=TRUE}
+id_diagnostico <- 4131
+id_masgeneral <- TraduceCodigoMasGeneral(id_diagnostico)
+id_general <- TraduceCodigoGeneral(id_diagnostico)
+diag_masgeneral <- diccionario_masgeneral[diccionario_masgeneral$ID==id_masgeneral,"diag"]
+diag_general <- diccionario[diccionario$ID==id_general,"diag"]
+diag_especifico <- suppressWarnings(TraduceCodigoEspecifico(id_diagnostico))
+diag_masgeneral
+diag_general
+diag_especifico
+```
+
+Queda una última etapa para completar nuestro procesamiento de datos, se trata de tener una base poblacional sobre la que erlativizar nuestros datos. Necesitamos poder referir nuestros datos a la población de cada provincia en cada año, para ello usaremos lass Cifras Oficiales de Población de los Municipios Españoles: Revisión del Padrón Municipal[^cita6], de esta forma evitaremos dar cifras absolutas y usaremos una medida estándar en lo referente a la salud pública como es la incidencia por cada 100.000 habitantes.
+
+Con este procesado ya tenemos las herramientas necesarias para pasar a la siguiente fase del esquema de fludo del proyecto de _Data Science_
+
+## Análisis exploratorio y visualización
+### Planteamineto
+
+[^cita2]: [Encuesta de morbilidad hospitalaria. Instituto Nacional de Estadística](http://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736176778&menu=metodologia&idp=1254735573175)
+[^cita3]: [Encuesta de morbilidad hospitalaria. Instituto Nacional de Estadística. Microdatos](http://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736176778&menu=metodologia&idp=1254735573175)
+[^cita4]: [Encuesta de morbilidad hospitalaria. Instituto Nacional de Estadística. Diccionario](ftp://www.ine.es/temas/morbihos/disreg_morbi.zip)
+[^cita5]: [Correspondencia entre los diagnósticos publicados y la Clasificación Internacional de Enfermedades de la O.M.S. (9ª Revisión MC)](http://www.ine.es/daco/daco42/sanitarias/cie_mc_emh.xls)
+[^cita6]: [Cifras Oficiales de Población de los Municipios Españoles: Revisión del Padrón Municipal)](http://www.ine.es/jaxiT3/Tabla.htm?t=2852&L=0)
+
