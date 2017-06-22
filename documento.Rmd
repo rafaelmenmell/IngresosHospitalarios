@@ -3,8 +3,7 @@ title: "Un caso práctico de Data Science"
 author: "rafaelmenmell@gmail.com"
 date: "21 de junio de 2017"
 output:
-  pdf_document: default
-  html_document: default
+  md_document: github_document
 ---
 
 ```{r setup, include=FALSE}
