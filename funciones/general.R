@@ -48,7 +48,7 @@ LeeZip <- function(year,d=FALSE,p=NULL,u){
 
 LeeTodos <- function(y1=2005,y2=2015,diag=FALSE,provincia=NULL,urg=TRUE){
   ys <- y1:y2
-  data.m <- list()
+  data.m <- vector("list",length(ys))
   n <- 1
   for (y in ys){
     print(y)
