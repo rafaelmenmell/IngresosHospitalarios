@@ -42,6 +42,7 @@ LeeZip <- function(year,d=FALSE,p=NULL,u){
   if(!is.null(p)){
     data <- data[data$prov_hosp==p,]
   }
+  unlink(fileu)
   return(data)
 }
 
@@ -51,7 +52,7 @@ LeeTodos <- function(y1=2005,y2=2015,diag=FALSE,provincia=NULL,urg=TRUE){
   n <- 1
   for (y in ys){
     print(y)
-    data.m[[n]] <- LeeZip(y,d=diag,p=provincia,u=urg)
+    data.m[[n]] <- suppressMessages(LeeZip(y,d=diag,p=provincia,u=urg))
     n <- n+1
   }
   return(data.m)
