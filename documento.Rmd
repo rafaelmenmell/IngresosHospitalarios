@@ -121,6 +121,7 @@ Lo primero es hacernos con un conjunto de datos de los ingresos hospitalarios ur
 ```{r chunk4, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 ingresos1 <- LeeTodos(y1 = 2005,y2 = 2015,diag = TRUE,provincia = 28,urg = TRUE)
 ingresos1 <- bind_rows(ingresos1)
+ingresos1 <- ingresos1 %>% filter(edad<=16)
 ```
 
 ```{r chunk5, echo=FALSE, cache=TRUE, dependson=c(-1)}
