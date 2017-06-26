@@ -148,7 +148,6 @@ El numero total de ingresos urgentes en ese periodo para menores de 17 años fue
 ```{r graph1, echo=TRUE, dependson=c(-1), cahce=TRUE}
 #quito los ingresos de 2004
 ingresos2 <- ingresos1[year(ingresos1$fecha_ingreso)!=2014,]
-str(ingresos2)
 ejemplo.count.year.diag1 <- ingresos2 %>% dplyr::group_by(anyo=year(fecha_ingreso),diag1) %>% dplyr::summarise(total=n()) %>% dplyr::top_n(10,total)
 
 ejemplo.count.year.diag1 <- full_join(ejemplo.count.year.diag1,diccionario_masgeneral,by=c("diag1"="ID"))
