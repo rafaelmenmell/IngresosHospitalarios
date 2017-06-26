@@ -16,6 +16,7 @@ source("funciones/funciones_aux.R")
 library(dplyr)
 library(doSNOW)
 library(foreach)
+library(parallel)
 ```
 
 
@@ -122,18 +123,24 @@ ingresos1 <- LeeTodos(y1 = 2005,y2 = 2015,diag = TRUE,provincia = 28,urg = TRUE)
 ingresos1 <- bind_rows(ingresos1)
 ```
 
-```{r chunk5, echo=TRUE, cache=TRUE, dependson=c(-1)}
-cl <- snow::makeCluster(3)
+```{r chunk5, echo=FALSE, cache=TRUE, dependson=c(-1)}
+cl <- makeCluster(3,outfile="")
 registerDoSNOW(cl)
-clusterExport(cl,c("CargaDiccionario","CargaDiciconarioMasGeneral","TraduceCodigoEspecifico","TraduceCodigoGeneral","TraduceCodigoMasGeneral"))
-ingresos1$diag1<-NA
-foreach(i = 1:nrow(ingresos1)) %dopar%{
-  # if (i %in% seq(1,nrow(ingresos1),10000)){
-  #   cat(sprintf("\r%s",i))
-  # }
-  ingresos1[i,]$diag1<-TraduceCodigoMasGeneral(ingresos1[i,]$diag_ppal)
-}
+
+it <- nrow(ingresos1)
+
+pb <- txtProgressBar(max = it, style = 3)
+progress <- function(n) setTxtProgressBar(pb, n)
+opts <- list(progress = progress)
+
+res = foreach(i = 1:it, 
+              .combine = "rbind", 
+              .packages = c("stringi","dplyr"),.options.snow = opts) %dopar% {
+                cat(sprintf("\r%s de %s",i,it))
+                TraduceCodigoMasGeneralFaster(ingresos1[i,]$diag_ppal)
+              }
 stopCluster(cl)
+ingresos1$diag1 <- res[,1]
 ```
 El numero total de ingresos urgentes en ese periodo fue de `r nrow(ingresos1)` de ellos, `r nrow(ingresos1 %>% filter(edad<=16))` fueros menores de 17 años y 
 
