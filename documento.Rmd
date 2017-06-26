@@ -124,7 +124,7 @@ ingresos1 <- bind_rows(ingresos1)
 ingresos1 <- ingresos1 %>% filter(edad<=16)
 ```
 
-```{r chunk5, echo=FALSE, cache=TRUE, dependson=c(-1)}
+```{r chunk5, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE, dependson=c(-1)}
 cl <- makeCluster(3,outfile="")
 registerDoSNOW(cl)
 
@@ -143,7 +143,18 @@ res = foreach(i = 1:it,
 stopCluster(cl)
 ingresos1$diag1 <- res[,1]
 ```
-El numero total de ingresos urgentes en ese periodo fue de `r nrow(ingresos1)` de ellos, `r nrow(ingresos1 %>% filter(edad<=16))` fueros menores de 17 años y 
+El numero total de ingresos urgentes en ese periodo para menores de 17 años fue de `r nrow(ingresos1)` de ellos, `r nrow(ingresos1 %>% filter(diag1==8))` fueros debidos a enfermedades del aparato respiratorio, por lo que confirmamos la importancia de estas patologías.
+
+```{r graph1, echo=TRUE, dependson=c(-1), cahce=TRUE}
+#quito los ingresos de 2004
+ingresos2 <- ingresos1[year(ingresos1$fecha_ingreso)!=2014,]
+str(ingresos2)
+ejemplo.count.year.diag1 <- ingresos2 %>% dplyr::group_by(anyo=year(fecha_ingreso),diag1) %>% dplyr::summarise(total=n()) %>% dplyr::top_n(10,total)
+
+ejemplo.count.year.diag1 <- full_join(ejemplo.count.year.diag1,diccionario_masgeneral,by=c("diag1"="ID"))
+unique(ejemplo.count.year.diag1$anyo)
+#ggplot(data=ejemplo.count.year.diag1)+geom_bar(stat="identity",aes(x=reorder(diag,total),total,fill=diag))+facet_wrap(~ anyo,nrow=5,ncol=2,scales = "fixed")+theme(axis.text.x=element_blank(),axis.title.x=element_blank(),axis.ticks.x=element_blank()) +  theme(legend.text=element_text(size=5),legend.title=element_blank())+labs(y="Ingresos",title="Diez razones principales de ingreso por año. 2005-2014",subtitle="Madrid. Pacientes menores de 17 años",caption="INE. Encuesta de morbilidad hospitalaria")
+```
 
 [^cita2]: [Encuesta de morbilidad hospitalaria. Instituto Nacional de Estadística](http://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736176778&menu=metodologia&idp=1254735573175)
 [^cita3]: [Encuesta de morbilidad hospitalaria. Instituto Nacional de Estadística. Microdatos](http://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736176778&menu=metodologia&idp=1254735573175)
