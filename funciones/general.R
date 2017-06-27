@@ -51,7 +51,7 @@ LeeTodos <- function(y1=2005,y2=2015,diag=FALSE,provincia=NULL,urg=TRUE){
   data.m <- vector("list",length(ys))
   n <- 1
   for (y in ys){
-    print(y)
+    #print(y)
     data.m[[n]] <- suppressMessages(LeeZip(y,d=diag,p=provincia,u=urg))
     n <- n+1
   }

@@ -1,11 +1,28 @@
-#para ejecutar en linux
+library(dplyr)
+library(doSNOW)
+library(foreach)
+source("funciones/general.R")
+source("funciones/funciones_aux.R")
 
-ejemplo <- ingresos.urgentes.madrid.2010[1:100,]
-library(doParallel)
-cl <- makeCluster(8,outfile="")
-clusterExport(cl,c("CargaDiccionario","CargaDiciconarioMasGeneral","TraduceCodigoEspecifico","TraduceCodigoGeneral","TraduceCodigoMasGeneral"))
-ejemplo$diag1<-NA
-foreach(i = 1:nrow(ejemplo)) %dopar%{
-  cat(sprintf("\r%s",i))
-  ejemplo[i,]$diag1<-TraduceCodigoMasGeneral(ejemplo[i,]$diag_ppal)
-}
+
+ingresos1 <- LeeTodos(y1 = 2005,y2 = 2015,diag = TRUE,provincia = 28,urg = TRUE)
+ingresos1 <- bind_rows(ingresos1)
+
+
+cl <- makeCluster(3,outfile="")
+registerDoSNOW(cl)
+
+it <- nrow(ingresos1)
+
+pb <- txtProgressBar(max = it, style = 3)
+progress <- function(n) setTxtProgressBar(pb, n)
+opts <- list(progress = progress)
+
+res = foreach(i = 1:it, 
+              .combine = "rbind", 
+              .packages = c("stringi","dplyr"),.options.snow = opts) %dopar% {
+                cat(i)
+                TraduceCodigoMasGeneralFaster(ingresos1[i,]$diag_ppal)
+              }
+stopCluster(cl)
+ingresos1$diag1 <- res[,1]
