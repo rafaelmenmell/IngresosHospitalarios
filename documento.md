@@ -256,19 +256,33 @@ El numero total de ingresos urgentes en ese periodo para menores de 17 años fue
 
 ``` r
 ejemplo.count.year.diag1 <- ingresos1 %>% dplyr::group_by(anyo=year(fecha_ingreso),diag1) %>% dplyr::summarise(total=n()) %>% dplyr::top_n(10,total)
-nrow(ingresos1)
-```
 
-    ## [1] 489047
-
-``` r
-#quito los ingresos de 2004
-ejemplo.count.year.diag1 <- ejemplo.count.year.diag1[ejemplo.count.year.diag1$anyo!=2014,]
-
+#quito los ingresos de 2004 y unos años que salen como NA
+ejemplo.count.year.diag1 <- ejemplo.count.year.diag1[ejemplo.count.year.diag1$anyo!=2004,]
+ejemplo.count.year.diag1 <- ejemplo.count.year.diag1[complete.cases(ejemplo.count.year.diag1),]
 ejemplo.count.year.diag1 <- full_join(ejemplo.count.year.diag1,diccionario_masgeneral,by=c("diag1"="ID"))
 
-#ggplot(data=ejemplo.count.year.diag1)+geom_bar(stat="identity",aes(x=reorder(diag,total),total,fill=diag))+facet_wrap(~ anyo,nrow=5,ncol=2,scales = "fixed")+theme(axis.text.x=element_blank(),axis.title.x=element_blank(),axis.ticks.x=element_blank()) +  theme(legend.text=element_text(size=5),legend.title=element_blank())+labs(y="Ingresos",title="Diez razones principales de ingreso por año. 2005-2014",subtitle="Madrid. Pacientes menores de 17 años",caption="INE. Encuesta de morbilidad hospitalaria")
+ggplot(data=ejemplo.count.year.diag1)+geom_bar(stat="identity",aes(x=reorder(diag1,total),total,fill=diag1))+facet_wrap(~ anyo,nrow=5,scales = "fixed")+theme(axis.text.x=element_blank(),axis.title.x=element_blank(),axis.ticks.x=element_blank()) +  theme(legend.text=element_text(size=5),legend.title=element_blank())+labs(y="Ingresos",title="Diez razones principales de ingreso por año. 2005-2015",subtitle="Madrid. Pacientes menores de 17 años",caption="INE. Encuesta de morbilidad hospitalaria")
 ```
+
+    ## Warning: Removed 6 rows containing missing values (position_stack).
+
+![](documento_files/figure-markdown_github/graph1-1.png)
+
+``` r
+ejemplo.count.year.diag2 <- ingresos2 %>% dplyr::group_by(anyo=year(fecha_ingreso),diag2) %>% dplyr::summarise(total=n()) %>% dplyr::top_n(10,total)
+
+#quito los ingresos de 2004 y unos años que salen como NA
+ejemplo.count.year.diag2 <- ejemplo.count.year.diag2[ejemplo.count.year.diag2$anyo!=2004,]
+ejemplo.count.year.diag2 <- ejemplo.count.year.diag2[complete.cases(ejemplo.count.year.diag2),]
+ejemplo.count.year.diag2 <- full_join(ejemplo.count.year.diag2,diccionario,by=c("diag2"="ID"))
+
+ggplot(data=ejemplo.count.year.diag2)+geom_bar(stat="identity",aes(x=reorder(diag2,total),total,fill=diag2))+facet_wrap(~ anyo,nrow=5,scales = "fixed")+theme(axis.text.x=element_blank(),axis.title.x=element_blank(),axis.ticks.x=element_blank()) +  theme(legend.text=element_text(size=5),legend.title=element_blank())+labs(y="Ingresos",title="Diez razones principales de ingreso por año por enfermedades del aparato respiratorio. 2005-2015",subtitle="Madrid. Pacientes menores de 17 años",caption="INE. Encuesta de morbilidad hospitalaria")
+```
+
+    ## Warning: Removed 117 rows containing missing values (position_stack).
+
+![](documento_files/figure-markdown_github/graph2-1.png)
 
 [1] [R for Data Science, Hadley Wickham & Garrett Grolemund](http://r4ds.had.co.nz/).
 
