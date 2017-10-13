@@ -286,6 +286,36 @@ ggplot(data=ejemplo.count.year.diag2)+geom_bar(stat="identity",aes(x=reorder(dia
 
 ![](documento_files/figure-markdown_github-ascii_identifiers/graph2-1.png)
 
+Podemos ver que una de las causas más frecuentes de ingresos hospitalarios de menores de 16 años es la neumonía y la gripe. Si nos centramos en la gripem todos conocemos el carácter estacional de dichas enfermedades por lo que a continuación vamos a visualizar algunos hechos interesantes al respecto.
+
+``` r
+library(xts)
+gripe <- ingresos2 %>% filter(diag2 ==57) %>% dplyr::group_by(fecha_ingreso) %>% dplyr::summarise(total=n())
+str(ingresos2)
+```
+
+    ## Classes 'tbl_df', 'tbl' and 'data.frame':    131995 obs. of  11 variables:
+    ##  $ prov_hosp    : int  28 28 28 28 28 28 28 28 28 28 ...
+    ##  $ sexo         : int  2 1 1 1 2 2 1 1 1 2 ...
+    ##  $ prov_res     : int  28 28 28 28 28 28 28 28 28 28 ...
+    ##  $ diag_in      : int  2 2 2 2 2 2 2 2 2 2 ...
+    ##  $ diag_ppal    : chr  "486" "486" "485" "475" ...
+    ##  $ motivo_alta  : int  1 1 1 1 1 1 1 1 1 1 ...
+    ##  $ estancia     : int  2 3 4 6 4 2 4 2 1 2 ...
+    ##  $ fecha_ingreso: Date, format: "2005-06-29" "2005-07-01" ...
+    ##  $ edad         : int  5 1 6 3 2 4 2 2 1 1 ...
+    ##  $ diag1        : int  8 8 8 8 8 8 8 8 8 8 ...
+    ##  $ diag2        : int  57 57 57 56 60 55 57 58 55 57 ...
+
+``` r
+# gripe$especifico <- NA
+# for (i in 1:nrow(gripe)){
+#   gripe[i,]$especifico <- TraduceCodigoEspecifico(codigo = diag)
+# }
+# gripe$year <- year(gripe$fecha_ingreso)
+# ggplot(data=gripe,aes(x=fecha_ingreso,y=total)) + geom_line() + facet_wrap(~year,nrow=2, scales = 'free_x') + labs(y="Ingresos",title="Ingresos hospitalarios de menores causados por gripe o neumonía. 2005-2015",subtitle="Madrid. Pacientes menores de 17 años",caption="INE. Encuesta de morbilidad hospitalaria")
+```
+
 [1] [R for Data Science, Hadley Wickham & Garrett Grolemund](http://r4ds.had.co.nz/).
 
 [2] [Encuesta de morbilidad hospitalaria. Instituto Nacional de Estadística](http://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736176778&menu=metodologia&idp=1254735573175)

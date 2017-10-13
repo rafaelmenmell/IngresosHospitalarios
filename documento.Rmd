@@ -17,6 +17,8 @@ library(dplyr)
 library(doSNOW)
 library(foreach)
 library(parallel)
+library(xts)
+library(forecast)
 ```
 
 
@@ -181,6 +183,21 @@ ejemplo.count.year.diag2 <- ejemplo.count.year.diag2 %>% dplyr::top_n(10,total)
 
 ggplot(data=ejemplo.count.year.diag2)+geom_bar(stat="identity",aes(x=reorder(diag,total),total,fill=diag))+facet_wrap(~ anyo,nrow=5,scales = "fixed")+theme(axis.text.x=element_blank(),axis.title.x=element_blank(),axis.ticks.x=element_blank()) +  theme(legend.text=element_text(size=5),legend.title=element_blank())+labs(y="Ingresos",title="Diez razones principales de ingreso por año por enfermedades del aparato respiratorio. 2005-2015",subtitle="Madrid. Pacientes menores de 17 años",caption="INE. Encuesta de morbilidad hospitalaria")
 ```
+
+Podemos ver que una de las causas más frecuentes de ingresos hospitalarios de menores de 16 años es la neumonía y la gripe. Si nos centramos en la gripem todos conocemos el carácter estacional de dichas enfermedades por lo que a continuación vamos a visualizar algunos hechos interesantes al respecto.
+
+```{r gripe1, echo=TRUE, fig.height=6, fig.width=10, cache=TRUE, dependson=c(-1), asis=TRUE}
+library(xts)
+gripe <- ingresos2 %>% filter(diag2 ==57)# %>% dplyr::group_by(fecha_ingreso) %>% dplyr::summarise(total=n())
+gripe$especifico <- NA
+for (i in 1:nrow(gripe)){
+  gripe[i,]$especifico <- TraduceCodigoEspecifico(codigo = gripe[i,]$diag_ppal)
+}
+head(gripe)
+# gripe$year <- year(gripe$fecha_ingreso)
+# ggplot(data=gripe,aes(x=fecha_ingreso,y=total)) + geom_line() + facet_wrap(~year,nrow=2, scales = 'free_x') + labs(y="Ingresos",title="Ingresos hospitalarios de menores causados por gripe o neumonía. 2005-2015",subtitle="Madrid. Pacientes menores de 17 años",caption="INE. Encuesta de morbilidad hospitalaria")
+```
+
 
 [^cita2]: [Encuesta de morbilidad hospitalaria. Instituto Nacional de Estadística](http://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736176778&menu=metodologia&idp=1254735573175)
 [^cita3]: [Encuesta de morbilidad hospitalaria. Instituto Nacional de Estadística. Microdatos](http://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736176778&menu=metodologia&idp=1254735573175)
