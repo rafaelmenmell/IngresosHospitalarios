@@ -141,14 +141,16 @@ ingresos1$diag1 <- res[,1]
 El numero total de ingresos urgentes en ese periodo para menores de 17 años fue de `r nrow(ingresos1)` de ellos, `r nrow(ingresos1 %>% filter(diag1==8))` fueros debidos a enfermedades del aparato respiratorio, por lo que confirmamos la importancia de estas patologías.
 
 ```{r graph1, echo=TRUE, fig.height=6, fig.width=10, cache=TRUE, dependson=c(-1), asis=TRUE}
-ejemplo.count.year.diag1 <- ingresos1 %>% dplyr::group_by(anyo=year(fecha_ingreso),diag1) %>% dplyr::summarise(total=n()) %>% dplyr::top_n(10,total)
+ejemplo.count.year.diag1 <- ingresos1 %>% dplyr::group_by(anyo=year(fecha_ingreso),diag1) %>% dplyr::summarise(total=n())
 
 #quito los ingresos de 2004 y unos años que salen como NA
 ejemplo.count.year.diag1 <- ejemplo.count.year.diag1[ejemplo.count.year.diag1$anyo!=2004,]
 ejemplo.count.year.diag1 <- ejemplo.count.year.diag1[complete.cases(ejemplo.count.year.diag1),]
 ejemplo.count.year.diag1 <- full_join(ejemplo.count.year.diag1,diccionario_masgeneral,by=c("diag1"="ID"))
 
-ggplot(data=ejemplo.count.year.diag1)+geom_bar(stat="identity",aes(x=reorder(diag1,total),total,fill=diag1))+facet_wrap(~ anyo,nrow=5,scales = "fixed")+theme(axis.text.x=element_blank(),axis.title.x=element_blank(),axis.ticks.x=element_blank()) +  theme(legend.text=element_text(size=5),legend.title=element_blank())+labs(y="Ingresos",title="Diez razones principales de ingreso por año. 2005-2015",subtitle="Madrid. Pacientes menores de 17 años",caption="INE. Encuesta de morbilidad hospitalaria")
+ejemplo.count.year.diag1 <- ejemplo.count.year.diag1 %>% dplyr::top_n(10,total)
+
+ggplot(data=ejemplo.count.year.diag1)+geom_bar(stat="identity",aes(x=reorder(diag,total),total,fill=diag))+facet_wrap(~ anyo,nrow=5,scales = "fixed")+theme(axis.text.x=element_blank(),axis.title.x=element_blank(),axis.ticks.x=element_blank()) +  theme(legend.text=element_text(size=5),legend.title=element_blank())+labs(y="Ingresos",title="Diez razones principales de ingreso por año. 2005-2015",subtitle="Madrid. Pacientes menores de 17 años",caption="INE. Encuesta de morbilidad hospitalaria")
 ```
 
 ```{r chunk6, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE, dependson=c(-1)}
@@ -168,14 +170,16 @@ ingresos2$diag2 <- res[,1]
 ```
 
 ```{r graph2, echo=TRUE, fig.height=6, fig.width=10, cache=TRUE, dependson=c(-1), asis=TRUE}
-ejemplo.count.year.diag2 <- ingresos2 %>% dplyr::group_by(anyo=year(fecha_ingreso),diag2) %>% dplyr::summarise(total=n()) %>% dplyr::top_n(10,total)
+ejemplo.count.year.diag2 <- ingresos2 %>% dplyr::group_by(anyo=year(fecha_ingreso),diag2) %>% dplyr::summarise(total=n())
 
 #quito los ingresos de 2004 y unos años que salen como NA
 ejemplo.count.year.diag2 <- ejemplo.count.year.diag2[ejemplo.count.year.diag2$anyo!=2004,]
 ejemplo.count.year.diag2 <- ejemplo.count.year.diag2[complete.cases(ejemplo.count.year.diag2),]
 ejemplo.count.year.diag2 <- full_join(ejemplo.count.year.diag2,diccionario,by=c("diag2"="ID"))
 
-ggplot(data=ejemplo.count.year.diag2)+geom_bar(stat="identity",aes(x=reorder(diag2,total),total,fill=diag2))+facet_wrap(~ anyo,nrow=5,scales = "fixed")+theme(axis.text.x=element_blank(),axis.title.x=element_blank(),axis.ticks.x=element_blank()) +  theme(legend.text=element_text(size=5),legend.title=element_blank())+labs(y="Ingresos",title="Diez razones principales de ingreso por año por enfermedades del aparato respiratorio. 2005-2015",subtitle="Madrid. Pacientes menores de 17 años",caption="INE. Encuesta de morbilidad hospitalaria")
+ejemplo.count.year.diag2 <- ejemplo.count.year.diag2 %>% dplyr::top_n(10,total)
+
+ggplot(data=ejemplo.count.year.diag2)+geom_bar(stat="identity",aes(x=reorder(diag,total),total,fill=diag))+facet_wrap(~ anyo,nrow=5,scales = "fixed")+theme(axis.text.x=element_blank(),axis.title.x=element_blank(),axis.ticks.x=element_blank()) +  theme(legend.text=element_text(size=5),legend.title=element_blank())+labs(y="Ingresos",title="Diez razones principales de ingreso por año por enfermedades del aparato respiratorio. 2005-2015",subtitle="Madrid. Pacientes menores de 17 años",caption="INE. Encuesta de morbilidad hospitalaria")
 ```
 
 [^cita2]: [Encuesta de morbilidad hospitalaria. Instituto Nacional de Estadística](http://www.ine.es/dyngs/INEbase/es/operacion.htm?c=Estadistica_C&cid=1254736176778&menu=metodologia&idp=1254735573175)
