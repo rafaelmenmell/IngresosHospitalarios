@@ -2,7 +2,6 @@
 library(readr)
 library(dplyr)
 library(ggplot2)
-library(meteologica)
 library(seasonal)
 
 LeeZip <- function(year,d=FALSE,p=NULL,u){

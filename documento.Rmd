@@ -19,6 +19,7 @@ library(foreach)
 library(parallel)
 library(xts)
 library(forecast)
+library(lubridate)
 ```
 
 
@@ -119,7 +120,7 @@ Las posibilidades que ofrece este conjunto de datos es inmensa, voy a centrar es
 Voy a centrar el estudio en la última década disponible 2005-2015, en los dos primeros casos sólo en la Comunidad de Madrid y en el tercero en todas las provincias de España.
 
 #### Menores y enfermedades respiratorias
-Lo primero es hacernos con un conjunto de datos de los ingresos hospitalarios urgentes, periodo 2005-2015, en la Comunidad de Madrid para menores de 16 años.
+Lo primero es hacernos con un conjunto de datos de los ingresos hospitalarios urgentes, periodo 2010-2015, en la Comunidad de Madrid para menores de 16 años.
 ```{r chunk4, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE}
 ingresos1 <- LeeTodos(y1 = 2005,y2 = 2015,diag = TRUE,provincia = 28,urg = TRUE)
 ingresos1 <- bind_rows(ingresos1)
@@ -127,14 +128,15 @@ ingresos1 <- ingresos1 %>% filter(edad<=16)
 ```
 
 ```{r chunk5, echo=FALSE, message=FALSE, warning=FALSE, cache=TRUE, dependson=c(-1)}
-cl <- makeCluster(3,outfile="")
+cl <- makeCluster(4,outfile="")
 registerDoSNOW(cl)
 
 it <- nrow(ingresos1)
-
-res = foreach(i = 1:it, 
-              .combine = "rbind", 
+res <- vector("numeric",it)
+res = foreach(i = 1:it,
+              .combine = "rbind",
               .packages = c("stringi","dplyr")) %dopar% {
+                cat(sprintf("%s de %s\r",i,it))
                 TraduceCodigoMasGeneralFaster(ingresos1[i,]$diag_ppal)
               }
 stopCluster(cl)

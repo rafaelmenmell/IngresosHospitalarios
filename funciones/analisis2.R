@@ -4,7 +4,6 @@
 # saveRDS(data.full,"datafull.rds")
 
 library(dplyr)
-library(meteologica)
 library(ggplot2)
 
 data.full <- readRDS("datafull.rds")
